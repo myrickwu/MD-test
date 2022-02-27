@@ -3,7 +3,7 @@
 units	metal
 boundary		p p p
 atom_style	atomic #对金属不含键信息
-timestep		0.001 #1fs 1分秒
+timestep		0.001 #1fs 1飞秒
 neighbor		2.0 bin #在力的阶段半径外面 扩展了2.0Am
 neigh_modify	every 1 delay 0
 
