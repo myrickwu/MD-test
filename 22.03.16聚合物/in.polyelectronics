@@ -1,0 +1,83 @@
+######本例子没有做data文件，不能正常运行的！！！
+#BD模拟，聚合物 反粒子系统，在反粒子溶液中
+
+echo                screen    #写入screen或log文件，记录测试过程，测试没问题后就可以注释掉了
+
+units               lj             #单位类型lj，real，metal，si，cgs，electron，micro，nano
+dimension           3             #盒子维度，2或3
+boundary            p p p #周期性边界
+atom_style          full  #原子类型 分子molecular+电荷charge，默认atomic是点，body刚体
+bond_style   harmonic #键相互作用-弹簧
+angle_style   harmonic #角相互作用---弹簧
+pair_style    lj/cut/coul/long 10.0 8.0
+
+read data       data.file  #读这个data文件
+
+bond_coeff    1   5000.0 1.0    #键相互作用
+angle_coeff   1   50.0 180       #角相互作用
+pair_coeff    1 1 1.0 1.0           #对相互作用
+pair_coeff    1 2 1.0 0.8 0.898
+pair_coeff    2 2 1.0 0.6 0.673
+pair_modify    shife yes
+kspace_style   pppm 1.0e6      #p3m算法,精度
+kspace_modify   order 6         #精度
+
+#模型建完了
+
+############################################
+#能量最小化，排除非常不理想的构想，实现一个比较合理的初始构想
+
+#min_sytle   cg  #陈中隆书上有介绍，cg默认值
+minimize  1.0e-4 1.0e-6 1000 10000  #迭代收敛条件，迭代次数
+
+###接下来判断结构的效果，先输出数据
+
+dump  1 all  atom 2 dump.lammpstrj   #ID，所有原子，输出类型，2步，strj这个文件可拖到umd中观察进行验证，不合适就修改data文件，防止计算了几天出现错误
+
+#能量最小化的其他方法：·1.将相互作用势改成软势力
+#方法2.    fix nve/limitie 0.1 #体系任何原子运动最大距离强制为0.1
+
+#################################
+#接下来写fix语句，实现分子动力学模拟-郎之万分子动力学模拟NVT系综
+
+neighbor      0.3 bin
+neig_modify   every 2 delay 10 check yes    #neighborlist，只计算体系截断距离rc之内的原子的相互作用，用计算空间去换取计算时间，节约时间，neighbour rc+0.3，划定一个范围保证原子不会跑出去或进来
+
+#NVT系综
+
+velocity       all create 1.2 4928459 dist gaussian #分配速度
+
+fix        10 all nve
+fix        20 all langevin 1.2 1.2 1000.0 699411 zero yes   #郎之万
+#fix       30 all momentum 1000 linear 1 1 1 #
+
+
+thermo        1000 #每隔1000步输出热力学信息
+thermo_style  custom step temp pe etotal press
+
+#弛豫过程,找一个数据来确认达到平衡态，如能量、结构等体系的特征量
+dump         1 all atom 1000 dump1.lammpstrj
+run          100000
+#弛豫过程的数据要扔掉，没有达到平衡态
+
+#热力学信息收集
+undump       1
+dump         2 all atom 1000 dump2.lammpstrj id type mol x y z vx vy vz fx fy fz #提前确定号输出的数据
+run          10000000
+
+#至少要收集100个tai.的时间步数
+#如1000步收集一个snapshot轨迹点
+#至少要跑1000x100步
+
+
+
+
+
+
+
+
+
+
+
+
+
