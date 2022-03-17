@@ -11,7 +11,7 @@ bond_style   harmonic #键相互作用-弹簧
 angle_style   harmonic #角相互作用---弹簧
 pair_style    lj/cut/coul/long 10.0 8.0
 
-read data       data.file  #读这个data文件
+read_data       data.file  #读这个data文件
 
 bond_coeff    1   5000.0 1.0    #键相互作用
 angle_coeff   1   50.0 180       #角相互作用
@@ -41,9 +41,9 @@ dump  1 all  atom 2 dump.lammpstrj   #ID，所有原子，输出类型，2步，
 #接下来写fix语句，实现分子动力学模拟-郎之万分子动力学模拟NVT系综
 
 neighbor      0.3 bin
-neig_modify   every 2 delay 10 check yes    #neighborlist，只计算体系截断距离rc之内的原子的相互作用，用计算空间去换取计算时间，节约时间，neighbour rc+0.3，划定一个范围保证原子不会跑出去或进来
+neigh_modify   every 2 delay 10 check yes    #neighborlist，只计算体系截断距离rc之内的原子的相互作用，用计算空间去换取计算时间，节约时间，neighbour rc+0.3，划定一个范围保证原子不会跑出去或进来
 
-#NVT系综
+#NVT系综  如果是NPT系综平衡，先NVT平衡之后，再NPT平衡，分两步
 
 velocity       all create 1.2 4928459 dist gaussian #分配速度
 
