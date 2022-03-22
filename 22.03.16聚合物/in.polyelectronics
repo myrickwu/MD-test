@@ -56,7 +56,7 @@ thermo        1000 #每隔1000步输出热力学信息
 thermo_style  custom step temp pe etotal press
 
 #弛豫过程,找一个数据来确认达到平衡态，如能量、结构等体系的特征量
-dump         1 all atom 1000 dump1.lammpstrj
+dump         1 all atom 1000 dump1.lammpstrj #这个文件格式可以用vmd读出来
 run          100000
 #弛豫过程的数据要扔掉，没有达到平衡态
 

@@ -1,0 +1,52 @@
+#lammps in file for melt of cu
+
+echo		screen
+units		metal
+boundary	p p p
+atom_style	atomic
+
+
+lattice		fcc 3.61 #格点类型，格点常数
+region		box block 0 4 0 4 0 4 #xyz方向应该是晶胞的整数倍
+create_box		1 box
+create_atoms	1 box
+
+pair_style		eam
+pair_coeff		* * .Cu_u3.eam	#对相互作用系数，只用1种，通配符表示,指定相互作用势的路径
+
+#开始计算，初始化速度
+timestep		0.01
+neighbor		0.5 bin
+neigh_modify		every 10 chech yes
+
+variable		N	equal abs(floor(x[100]+10000)) #用一个原子ID是100的原子的x坐标产生一个随机数,加上10000，保证是正数，再取绝对值更放心
+
+velocity		all create 100 ${N} dist gausian #速度对应的是温度,100k,随机数用一个变量
+
+
+#run 没有跑平衡
+
+fix			1 all nvt temp 100.0 50.0 1.0 #初始温度100结束温度50，耦合常数1.0，连续降温
+dump		1 all custom 100 dump_100.lammpstrj id x y z
+
+thermo 			100
+#thermo_style	没有写，默认值
+
+run 1000000
+
+
+unfix		1	#去掉
+undump		1	#去掉输出
+
+fix			1 all nvt temp 90.0 90.0 1.0
+dump		1 all custom 100 dump_90.lammpstrj id x y z
+
+run 		1000000
+
+unfix		1	#去掉
+undump		1	#去掉输出
+
+fix			1 all nvt temp 80.0 80.0 1.0
+dump		1 all custom 100 dump_90.lammpstrj id x y z
+#以上几步是逐步降温，
+
