@@ -6,9 +6,6 @@ dimension	3
 atom_style	atomic
 boundary	f f f
 
-neighbor	2.0 bin
-
-neigh_modify		every 2 delay 10 check yes exclude group JGS JGS #金刚石作为刚体不用计算其相互作用
 
 #建模
 lattice	diamond 3.57 #金刚石的格点常数
@@ -16,7 +13,7 @@ region		s1 sphere -50.0 75 20 40 units box #units box单位，不是用的晶格
 region		s2 block -100 0 20 130 -40 25 units box
 region		se intersect 2 s1 s2 #2个的联合区域
 
-create_box		2 se #生成2种原子的box，以来把se可视化看下是否正确
+create_box		2 se #生成2种原子的box，以来把se可视化看下是否正确 sphere
 create_atoms	1 region se units box #单位还是box
 
 #latttice		diamond 5.43
@@ -28,8 +25,13 @@ create_atoms	1 region se units box #单位还是box
 #create_atoms	1 region se units box
 #create_atoms	2 region b1 units box
 
-
 mass			* 1.0 #质量金刚石应该是12g/mol
+
+#group
+group           JGS  type 1
+neighbor	    2.0 bin
+neigh_modify	every 2 delay 10 check yes exclude group JGS JGS #金刚石作为刚体不用计算其相互作用
+
 
 pair_style		soft 0.1 #截断半径，建立一个非常软的软势
 pair_coeff 		* * 1.0 #所有原子，半径1.0#现在只是用可视化软件看下模型对不对
