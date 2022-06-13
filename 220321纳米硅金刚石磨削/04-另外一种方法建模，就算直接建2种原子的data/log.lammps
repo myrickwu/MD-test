@@ -1,0 +1,55 @@
+LAMMPS (29 Sep 2021 - Update 3)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:98)
+  using 1 OpenMP thread(s) per MPI task
+# in file for crystal- slicing
+# export LAMMPS_POTENTIALS=/path/way/to/potentials
+# 你可以cd到lammps包的势函数下,执行pwd来获得上面的路径，
+#目的是将势函数文件夹设置为环境变量
+
+package        omp 8
+set 8 OpenMP thread(s) per MPI task
+using multi-threaded neighbor list subroutines
+echo           screen
+Created orthogonal box = (-500.00000 -500.00000 -500.00000) to (500.00000 500.00000 500.00000)
+  1 by 1 by 2 MPI processor grid
+Lattice spacing in x,y,z = 3.5700000 3.5700000 3.5700000
+Created 28395 atoms
+  using box units in orthogonal box = (-500.00000 -500.00000 -500.00000) to (500.00000 500.00000 500.00000)
+  create_atoms CPU = 0.004 seconds
+Lattice spacing in x,y,z = 5.4000000 5.4000000 5.4000000
+Created 175616 atoms
+  using box units in orthogonal box = (-500.00000 -500.00000 -500.00000) to (500.00000 500.00000 500.00000)
+  create_atoms CPU = 0.019 seconds
+28395 atoms in group JGS
+175616 atoms in group Gui
+48608 atoms in group layer1
+90944 atoms in group layer2
+36064 atoms in group layer3
+Reading tersoff potential file SiC.tersoff with DATE: 2011-04-26
+No /omp style for force computation currently active
+Neighbor list info ...
+  update every 2 steps, delay 10 steps, check yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 5
+  ghost atom cutoff = 5
+  binsize = 2.5, bins = 400 400 400
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair tersoff, perpetual
+      attributes: full, newton on, omp
+      pair build: full/bin/atomonly/omp
+      stencil: full/bin/3d
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 180.6 | 226.8 | 273.0 Mbytes
+Step Temp c_mytemp KinEng PotEng TotEng Enthalpy 
+       0    150.13826          293    3959.2002    -792771.1    -788811.9   -750641.98 
+       1    1473366.1          293     38853199   -342206.48     38510992     64429127 
+       2    5023334.1          293 1.3246714e+08    -305573.2 1.3216157e+08 2.2048547e+08 
+       3    6751835.7          293 1.7804835e+08   -157600.89 1.7789075e+08 2.9659606e+08 
+       4    6751835.7          293 1.7804835e+08   -157600.89 1.7789075e+08 2.9659606e+08 
+       5    6751835.7          293 1.7804835e+08   -157600.89 1.7789075e+08 2.9659606e+08 
+       6    6751835.7          293 1.7804835e+08   -157600.89 1.7789075e+08 2.9659606e+08 
+       7    6751835.7          293 1.7804835e+08   -157600.89 1.7789075e+08 2.9659606e+08 
+       8    6751835.7          293 1.7804835e+08   -157600.89 1.7789075e+08 2.9659606e+08 
+       9    6751835.7          293 1.7804835e+08   -157600.89 1.7789075e+08 2.9659606e+08 
+ERROR: Computed temperature for fix temp/rescale cannot be 0.0 (src/fix_temp_rescale.cpp:136)
+Last command: run            10

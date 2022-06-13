@@ -1,0 +1,79 @@
+# in file for crystal- slicing
+# export LAMMPS_POTENTIALS=/path/way/to/potentials
+# 你可以cd到lammps包的势函数下,执行pwd来获得上面的路径，
+#目的是将势函数文件夹设置为环境变量
+
+package        omp 8
+echo           screen
+units          metal
+dimension      3
+atom_style     atomic 
+boundary        f  f  f
+
+####### create atoms 
+region         box block   -500 500  -500 500 -500 500 units box #先生成比较大的box再在里面划region来生成格点
+create_box     2 box 
+
+lattice        diamond 3.57
+region         s1 sphere  -50.0  75  20  40 units box 
+region         s2 block   -100  -0   20.0  130.0  -40 25  units box
+region         se intersect  2 s1 s2
+create_atoms   1  region se  units box #原子类型1
+
+lattice        diamond 5.4
+region         b1 block  0  150  0 150 -41  0 units box
+region         b2 block  0  150  0 150 -120 -41 units box
+region         b3 block  0  150  0 150 -150 -120 units box
+region         b4 union 3 b1 b2 b3  #3个区域的联合
+create_atoms   2 region b4 units box   
+
+mass           1  12.0 #C
+mass           2  28.0 #Si摩尔质量g/mol
+
+#   set group 
+
+group          JGS  type 1
+neighbor        2.0 bin
+neigh_modify   every 2 delay 10 check yes  exclude group  JGS JGS 
+
+group          Gui  type 2
+group          layer1 region b1 #牛顿区
+group          layer2 region b2
+group          layer3 region b3
+
+# add interacions
+
+pair_style     tersoff   #manybody下面的势函数
+pair_coeff     * * SiC.tersoff C Si #原子1tpye1是C，原子2type2是si
+
+# add dynamics
+
+#fix            1  JGS move linear 1 0 0 #第一种方法，线性move，100m/s需要换算一下看是否是1 0 0
+velocity       JGS set 1 NULL NULL #第二种方法，
+velocity       layer2 create 293 12345 dist gaussian
+
+compute        mytemp layer2 temp/com
+
+fix            10  JGS nve/noforce
+
+fix            20  layer1 nve
+fix            30  layer2 nve
+fix            31  layer2 temp/rescale 1 293 293 1.0 1.0 #第二层控温
+fix_modify     31  temp mytemp
+fix            40  layer3 nve/noforce
+
+
+thermo        1 #输出热力学信息，每1步
+thermo_style  custom step temp c_mytemp ke pe etotal enthalpy #动能、势能、总能量、压力
+
+
+dump           1 all custom  1  C.lammpstrj  id type x y z 
+dump           2 Gui custom  1  Force.txt id x y z fx fy fz
+timestep       10
+run            10
+
+write_data     C-Si.data # crystal-slicing.data
+write_restart  C-si.restart
+
+
+

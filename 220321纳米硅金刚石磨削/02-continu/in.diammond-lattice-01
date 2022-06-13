@@ -8,7 +8,7 @@ boundary	f f f
 
 
 #建模
-lattice	diamond 3.57 #金刚石的格点常数
+lattice	    diamond 3.57 #金刚石的格点常数
 region		s1 sphere -50.0 75 20 40 units box #units box单位，不是用的晶格单位A，是nm？？
 region		s2 block -100 0 20 130 -40 25 units box
 region		se intersect 2 s1 s2 #2个的联合区域
@@ -42,4 +42,4 @@ dump			1 all custom 1 c.xyz id type x y z
 
 write_data		c.data #crystal-silicon.data
 
-run				1
+run				1 #只运行1步，因为只看结构来验证
